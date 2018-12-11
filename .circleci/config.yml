@@ -26,6 +26,11 @@ commands:
   generate_diary:
     steps:
       - run:
+          name: Configure Git
+          command: |
+            git config --global user.name 'CircleCI'
+            git config --global user.email 's+circleci@sugarshin.net'
+      - run:
           name: Generate Base Diary
           command: /bin/bash .circleci/gen.sh
 
