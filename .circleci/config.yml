@@ -1,0 +1,43 @@
+version: 2.1
+
+orbs:
+  slack: circleci/slack@0.1.10
+
+executors:
+  alpine_bash_curl_ssl:
+    working_directory: ~/repo
+    docker:
+      - image: ellerbrock/alpine-bash-curl-ssl:latest
+
+commands:
+  generate_diary:
+    steps:
+      - run:
+          name: Generate Base Diary
+          command: /bin/bash .circleci/gen.sh
+
+jobs:
+  gen_diary:
+    executor:
+      name: alpine_bash_curl_ssl
+    steps:
+      - checkout
+      - generate_diary
+  notify_slack:
+    machine: true
+    steps:
+      - slack/notify:
+          message: "Dairy from commit ${CIRCLE_SHA1} ref: https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}"
+          mentions: "${SLACK_UUID}"
+
+workflows:
+  scheduled_gen_diary:
+    triggers:
+      - schedule:
+          # JST 23:00
+          cron: "00 14 * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - gen_diary
