@@ -1,15 +1,28 @@
 version: 2.1
 
+references:
+  defaults: &defaults
+    working_directory: ~/repo
+
 orbs:
   slack: circleci/slack@0.1.10
 
 executors:
   alpine_bash_curl_ssl:
-    working_directory: ~/repo
+    <<: *defaults
     docker:
       - image: ellerbrock/alpine-bash-curl-ssl:latest
+  shellcheck:
+    <<: *defaults
+    docker:
+      - image: nlknguyen/alpine-shellcheck:v0.4.6
 
 commands:
+  shellcheck:
+    steps:
+      - run:
+          name: Analysis Script
+          command: shellcheck .circleci/gen.sh
   generate_diary:
     steps:
       - run:
@@ -17,6 +30,12 @@ commands:
           command: /bin/bash .circleci/gen.sh
 
 jobs:
+  analysis_script:
+    executor:
+      name: shellcheck
+    steps:
+      - checkout
+      - shellcheck
   gen_diary:
     executor:
       name: alpine_bash_curl_ssl
@@ -27,7 +46,7 @@ jobs:
     machine: true
     steps:
       - slack/notify:
-          message: "Dairy from commit ${CIRCLE_SHA1} ref: https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}"
+          message: "Diary from commit ${CIRCLE_SHA1} ref: https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}"
           mentions: "${SLACK_UUID}"
 
 workflows:
@@ -41,3 +60,12 @@ workflows:
               only: master
     jobs:
       - gen_diary
+      - notify_slack:
+         requires:
+           - gen_diary
+  test:
+    jobs:
+      - analysis_script:
+          filters:
+            branches:
+              ignore: master
