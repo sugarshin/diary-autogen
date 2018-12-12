@@ -11,7 +11,7 @@ executors:
   alpine_bash_curl_ssl:
     <<: *defaults
     docker:
-      - image: ellerbrock/alpine-bash-curl-ssl:latest
+      - image: circleci/buildpack-deps
   shellcheck:
     <<: *defaults
     docker:
@@ -41,11 +41,11 @@ jobs:
       name: alpine_bash_curl_ssl
     steps:
       - checkout
-      - run:
-          command: mkdir -p ~/.ssh
-      - add_ssh_keys:
-          fingerprints:
-            - "7c:66:b5:c5:62:9f:9e:25:74:b1:a2:0c:f5:44:ef:b2"
+      # - run:
+      #     command: mkdir -p ~/.ssh
+      # - add_ssh_keys:
+      #     fingerprints:
+      #       - "7c:66:b5:c5:62:9f:9e:25:74:b1:a2:0c:f5:44:ef:b2"
       - run:
           name: Configure Git
           command: |
