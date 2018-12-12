@@ -26,11 +26,6 @@ commands:
   generate_diary:
     steps:
       - run:
-          name: Configure Git
-          command: |
-            git config --global user.name 'CircleCI'
-            git config --global user.email 's+circleci@sugarshin.net'
-      - run:
           name: Generate Base Diary
           command: /bin/bash .circleci/gen.sh
 
@@ -46,6 +41,12 @@ jobs:
       name: alpine_bash_curl_ssl
     steps:
       - checkout
+      - add_ssh_keys
+      - run:
+          name: Configure Git
+          command: |
+            git config --global user.name 'CircleCI'
+            git config --global user.email 's+circleci@sugarshin.net'
       - generate_diary
   notify_slack:
     machine: true
@@ -55,19 +56,30 @@ jobs:
           mentions: "${SLACK_UUID}"
 
 workflows:
-  scheduled_gen_diary:
-    triggers:
-      - schedule:
-          # JST 23:00
-          cron: "00 14 * * *"
+  # scheduled_gen_diary:
+  #   triggers:
+  #     - schedule:
+  #         # JST 23:00
+  #         cron: "00 14 * * *"
+  #         filters:
+  #           branches:
+  #             only: master
+  #   jobs:
+  #     - gen_diary
+  #     - notify_slack:
+  #        requires:
+  #          - gen_diary
+  # tmp
+  gen_diary:
+    jobs:
+      - gen_diary:
           filters:
             branches:
               only: master
-    jobs:
-      - gen_diary
       - notify_slack:
          requires:
            - gen_diary
+  # tmp
   test:
     jobs:
       - analysis_script:
