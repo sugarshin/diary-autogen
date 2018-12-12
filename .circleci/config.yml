@@ -8,7 +8,7 @@ orbs:
   slack: circleci/slack@0.1.10
 
 executors:
-  alpine_bash_curl_ssl:
+  buildpack_deps:
     <<: *defaults
     docker:
       - image: circleci/buildpack-deps
@@ -45,7 +45,7 @@ jobs:
       - shellcheck
   gen_diary:
     executor:
-      name: alpine_bash_curl_ssl
+      name: buildpack_deps
     steps:
       - checkout
       - configure_git
