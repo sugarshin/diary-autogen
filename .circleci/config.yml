@@ -42,8 +42,8 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-        fingerprints:
-          - "7c:66:b5:c5:62:9f:9e:25:74:b1:a2:0c:f5:44:ef:b2"
+          fingerprints:
+            - "7c:66:b5:c5:62:9f:9e:25:74:b1:a2:0c:f5:44:ef:b2"
       - run:
           name: Configure Git
           command: |
@@ -72,7 +72,7 @@ workflows:
   #        requires:
   #          - gen_diary
   # tmp
-  gen_diary:
+  tmp_gen_diary:
     jobs:
       - gen_diary:
           filters:
