@@ -13,17 +13,8 @@ executors:
     <<: *defaults
     docker:
       - image: circleci/buildpack-deps
-  # shellcheck:
-  #   <<: *defaults
-  #   docker:
-  #     - image: nlknguyen/alpine-shellcheck:v0.4.6
 
 commands:
-  # shellcheck:
-  #   steps:
-  #     - run:
-  #         name: Analysis Script
-  #         command: shellcheck .circleci/gen.sh
   generate_diary:
     steps:
       - run:
@@ -44,12 +35,6 @@ commands:
             openssh-client
 
 jobs:
-  # analysis_script:
-  #   executor:
-  #     name: shellcheck
-  #   steps:
-  #     - checkout
-  #     - shellcheck
   gen_diary:
     executor:
       name: buildpack_deps
@@ -91,9 +76,3 @@ workflows:
       - notify_slack:
           requires:
             - gen_diary
-  # test:
-  #   jobs:
-  #     - analysis_script:
-  #         filters:
-  #           branches:
-  #             ignore: master
