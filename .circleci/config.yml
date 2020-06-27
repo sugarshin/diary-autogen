@@ -36,6 +36,12 @@ commands:
           command: |
             git config --global user.name 'CircleCI'
             git config --global user.email 's+circleci@sugarshin.net'
+  install_git_and_ssh_client:
+    steps:
+      - run: |
+          apk add --update-cache --no-progress \
+            git \
+            openssh-client
 
 jobs:
   # analysis_script:
@@ -64,7 +70,9 @@ jobs:
 workflows:
   test:
     jobs:
-      - shellcheck/check
+      - shellcheck/check:
+          pre-steps:
+            - install_git_and_ssh_client
   scheduled_gen_diary:
     triggers:
       - schedule:
@@ -74,13 +82,15 @@ workflows:
             branches:
               only: master
     jobs:
-      - shellcheck/check
+      - shellcheck/check:
+          pre-steps:
+            - install_git_and_ssh_client
       - gen_diary:
-         requires:
-           - shellcheck/check
+          requires:
+            - shellcheck/check
       - notify_slack:
-         requires:
-           - gen_diary
+          requires:
+            - gen_diary
   # test:
   #   jobs:
   #     - analysis_script:
