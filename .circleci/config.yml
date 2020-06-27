@@ -48,6 +48,9 @@ jobs:
       name: buildpack_deps
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - e4:fe:4c:90:2b:1c:2d:40:89:3c:52:0c:0a:40:b2:07
       - configure_git
       - generate_diary
   notify_slack:
