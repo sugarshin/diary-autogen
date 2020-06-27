@@ -6,23 +6,24 @@ references:
 
 orbs:
   slack: circleci/slack@0.1.10
+  shellcheck: circleci/shellcheck@1.3.16
 
 executors:
   buildpack_deps:
     <<: *defaults
     docker:
       - image: circleci/buildpack-deps
-  shellcheck:
-    <<: *defaults
-    docker:
-      - image: nlknguyen/alpine-shellcheck:v0.4.6
+  # shellcheck:
+  #   <<: *defaults
+  #   docker:
+  #     - image: nlknguyen/alpine-shellcheck:v0.4.6
 
 commands:
-  shellcheck:
-    steps:
-      - run:
-          name: Analysis Script
-          command: shellcheck .circleci/gen.sh
+  # shellcheck:
+  #   steps:
+  #     - run:
+  #         name: Analysis Script
+  #         command: shellcheck .circleci/gen.sh
   generate_diary:
     steps:
       - run:
@@ -37,12 +38,12 @@ commands:
             git config --global user.email 's+circleci@sugarshin.net'
 
 jobs:
-  analysis_script:
-    executor:
-      name: shellcheck
-    steps:
-      - checkout
-      - shellcheck
+  # analysis_script:
+  #   executor:
+  #     name: shellcheck
+  #   steps:
+  #     - checkout
+  #     - shellcheck
   gen_diary:
     executor:
       name: buildpack_deps
@@ -61,6 +62,9 @@ jobs:
           mentions: "${SLACK_UUID}"
 
 workflows:
+  test:
+    jobs:
+      - shellcheck/check
   scheduled_gen_diary:
     triggers:
       - schedule:
@@ -70,13 +74,16 @@ workflows:
             branches:
               only: master
     jobs:
-      - gen_diary
+      - shellcheck/check
+      - gen_diary:
+         requires:
+           - shellcheck/check
       - notify_slack:
          requires:
            - gen_diary
-  test:
-    jobs:
-      - analysis_script:
-          filters:
-            branches:
-              ignore: master
+  # test:
+  #   jobs:
+  #     - analysis_script:
+  #         filters:
+  #           branches:
+  #             ignore: master
