@@ -61,8 +61,8 @@ workflows:
   scheduled_gen_diary:
     triggers:
       - schedule:
-          # JST 20:00
-          cron: "00 11 * * *"
+          # JST 06:00
+          cron: "00 21 * * *"
           filters:
             branches:
               only: master
