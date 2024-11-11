@@ -47,18 +47,18 @@ workflows:
       - shellcheck/check:
           pre-steps:
             - install_git_and_ssh_client
-  scheduled_gen_diary:
-    triggers:
-      - schedule:
-          # JST 06:00
-          cron: "00 21 * * *"
-          filters:
-            branches:
-              only: master
-    jobs:
-      - shellcheck/check:
-          pre-steps:
-            - install_git_and_ssh_client
-      - gen_diary:
-          requires:
-            - shellcheck/check
+  # scheduled_gen_diary:
+  #   triggers:
+  #     - schedule:
+  #         # JST 06:00
+  #         cron: "00 21 * * *"
+  #         filters:
+  #           branches:
+  #             only: master
+  #   jobs:
+  #     - shellcheck/check:
+  #         pre-steps:
+  #           - install_git_and_ssh_client
+  #     - gen_diary:
+  #         requires:
+  #           - shellcheck/check
